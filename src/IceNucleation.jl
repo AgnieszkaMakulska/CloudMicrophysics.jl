@@ -9,6 +9,7 @@ import Thermodynamics as TD
 export dust_activated_number_fraction
 export deposition_J
 export ABIFM_J
+export INP_concentration_frequency
 
 """
     dust_activated_number_fraction(dust, ip, Si, T)
@@ -81,6 +82,35 @@ function ABIFM_J(
     logJ::FT = dust.ABIFM_m * Δa_w + dust.ABIFM_c
 
     return max(FT(0), FT(10)^logJ * FT(1e4)) # converts cm^-2 s^-1 to m^-2 s^-1
+end
+
+"""
+    INP_concentration_frequency(INPC,T)
+
+ - `INPC` - concentration of ice nucleating particles [m^-3]  
+ - `T` - air temperature [°C]
+
+Returns the relative frequency of a given INP concentration, 
+depending on the temperature.
+Based on Frostenberg et al., 2023.
+see DOI: 10.5194/acp-23-10883-2023
+"""
+function INP_concentration_frequency(
+    INPC::FT,
+    T::FT,
+    #params::CMP.Frostenberg2023,
+
+) where {FT}
+
+    a = 1.
+    b = 1.
+    sigma = 1.37
+    # a = params.a
+    # b = params.b
+    # sigma = params.sigma
+    mu = log(-(b*T)^9 *10^(-9))
+
+    return 1/(sqrt(2*pi)*sigma) *exp( -(log(a*INPC) - mu)^2 / (2*sigma^2) )
 end
 
 end # end module

@@ -90,3 +90,34 @@ function IceNucleationParameters(
         homogeneous,
     )
 end
+
+
+"""
+    Frostenberg2023{FT}
+
+Parameters for frequency distribution of INP concentration
+DOI: 10.5194/acp-23-10883-2023
+
+# Fields
+$(DocStringExtensions.FIELDS)
+"""
+struct Frostenberg2023{FT} <: ParametersType{FT}
+    "standard deviation"
+    sigma::FT
+    "coefficient"
+    a::FT
+    "coefficient"
+    b::FT
+end
+
+function Frostenberg2023(
+    ::Type{FT},
+    toml_dict::CP.AbstractTOMLDict = CP.create_toml_dict(FT),
+) where {FT}
+    (; data) = toml_dict
+    return Frostenberg2023(
+        FT(data["Frostenberg2023_standard_deviation"]["value"]),
+        FT(data["Frostenberg2023_a_coefficient"]["value"]),
+        FT(data["Frostenberg2023_b_coefficient"]["value"]),
+    )
+end
