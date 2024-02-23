@@ -3,6 +3,7 @@ import CloudMicrophysics.Common as CMO
 import CloudMicrophysics.HetIceNucleation as CMI_het
 import CloudMicrophysics.HomIceNucleation as CMI_hom
 import CloudMicrophysics.Parameters as CMP
+using Distributions
 
 function deposition_nucleation(::Empty, state, dY)
     FT = eltype(state)
@@ -108,6 +109,21 @@ function immersion_freezing(params::P3_het, PSD, state)
     (; T, Nₗ, Nᵢ) = state
     Nᵢ_het = CMI_het.P3_het_N_i(ips.p3, T, Nₗ, PSD.Vₗ, const_dt)
     return max(FT(0), (Nᵢ_het - Nᵢ) / const_dt)
+end
+
+function immersion_freezing(params::Frostenberg, PSD, state)
+    FT = eltype(state)
+    (; sigma, drawing_interval, using_mean) = params
+    (; T, Nᵢ, t) = state
+    if using_mean == true
+        INPC = exp(CMI_het.INP_concentration_mean(T))
+    else
+        if mod(t, drawing_interval) == 0
+            μ = CMI_het.INP_concentration_mean(T)
+            INPC = exp(rand(Normal(μ, sigma)))
+        end
+    end
+    return max(FT(0), INPC - Nᵢ)
 end
 
 function homogeneous_freezing(::Empty, PSD, state)

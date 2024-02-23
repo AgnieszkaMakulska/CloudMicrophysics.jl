@@ -222,6 +222,8 @@ function run_parcel(IC, t_0, t_end, pp)
         imm_params = ABIFM{FT}(pp.H₂SO₄ps, pp.tps, pp.aerosol)
     elseif pp.heterogeneous == "P3_het"
         imm_params = P3_het{FT}(pp.ips, pp.const_dt)
+    elseif pp.heterogeneous == "Frostenberg"
+        imm_params = Frostenberg{FT}(pp.sigma, pp.drawing_interval, pp.using_mean)
     else
         throw("Unrecognized heterogeneous mode")
     end

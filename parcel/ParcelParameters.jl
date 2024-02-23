@@ -48,6 +48,12 @@ struct P3_hom{FT} <: CMP.ParametersType{FT}
     const_dt::FT
 end
 
+struct Frostenberg{FT} <: CMP.ParametersType{FT}
+    sigma::CMP.ParametersType{FT}
+    drawing_interval::FT
+    using_mean::Bool
+end
+
 struct CondParams{FT} <: CMP.ParametersType{FT}
     aps::CMP.ParametersType{FT}
     tps::TDP.ThermodynamicsParameters{FT}
