@@ -113,17 +113,32 @@ end
 
 function immersion_freezing(params::Frostenberg, PSD, state)
     FT = eltype(state)
-    (; sigma, drawing_interval, using_mean) = params
-    (; T, Nᵢ, t) = state
-    if using_mean == true
-        INPC = exp(CMI_het.INP_concentration_mean(T))
-    else
-        if mod(t, drawing_interval) == 0
-            μ = CMI_het.INP_concentration_mean(T)
-            INPC = exp(rand(Normal(μ, sigma)))
-        end
+    (; σ, drawing_interval) = params
+    (; T, Nₗ, Nᵢ, t) = state
+    if mod(t, drawing_interval) == 0
+        μ = CMI_het.INP_concentration_mean(T)
+        INPC = exp(rand(Normal(μ, σ)))
     end
-    return max(FT(0), INPC - Nᵢ)
+    return min(Nₗ, max(FT(0), INPC - Nᵢ))
+end
+
+function immersion_freezing(params::Frostenberg_mean, PSD, state)
+    FT = eltype(state)
+    (; T, Nₗ, Nᵢ) = state
+    INPC = exp(CMI_het.INP_concentration_mean(T))
+    return min(Nₗ, max(FT(0), INPC - Nᵢ))
+end
+
+function immersion_freezing(params::Frostenberg_stochastic, PSD, state)
+    FT = eltype(state)
+    (; σ, γ) = params
+    (; T, Nₗ, Nᵢ, t) = state
+    μ = CMI_het.INP_concentration_mean(T)
+    g = σ * sqrt(2*γ)
+    mean = (1 - exp(-γ*t)) * μ
+    st_dev = sqrt( g^2 /(2*γ) * (1 - exp(-2*γ*t)) )
+    INPC = exp(rand(Normal(mean, st_dev)))
+    return min(Nₗ, max(FT(0), INPC - Nᵢ))
 end
 
 function homogeneous_freezing(::Empty, PSD, state)

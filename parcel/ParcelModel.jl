@@ -172,7 +172,7 @@ Parcel state vector (all variables are in base SI units):
 
 The parcel parameters struct comes with default values that can be overwritten:
  - deposition - string with deposition ice nucleation parameterization choice ["None" (default), "MohlerAF", "MohlerRate", "ActivityBased", "P3_dep"]
- - heterogeneous - string with heterogeneous ice nucleation parameterization choice ["None" (default), "ImmersionFreezing", "P3_het"]
+ - heterogeneous - string with heterogeneous ice nucleation parameterization choice ["None" (default), "ImmersionFreezing", "P3_het", "Frostenberg", "Frostenberg_mean","Frostenberg_stochastic"]
  - homogeneous - string with homogeneous ice nucleation parameterization choice ["None" (default), "ActivityBased", "P3_hom"]
  - size_distribution - string with cloud droplet and ice crystal size disribution choice ["Monodisperse" (default), "Gamma", "Lognormal"]
  - growth_modes - a vector with particle growth modes. Supported options: "Condensation", "Deposition". Default: ["Condensation",]
@@ -223,7 +223,11 @@ function run_parcel(IC, t_0, t_end, pp)
     elseif pp.heterogeneous == "P3_het"
         imm_params = P3_het{FT}(pp.ips, pp.const_dt)
     elseif pp.heterogeneous == "Frostenberg"
-        imm_params = Frostenberg{FT}(pp.sigma, pp.drawing_interval, pp.using_mean)
+        imm_params = Frostenberg{FT}(pp.σ, pp.drawing_interval)
+    elseif pp.heterogeneous == "Frostenberg_mean"
+        imm_params = Frostenberg_mean{FT}()
+    elseif pp.heterogeneous == "Frostenberg_stochastic"
+        imm_params = Frostenberg_stochastic{FT}(pp.σ, pp.γ)
     else
         throw("Unrecognized heterogeneous mode")
     end

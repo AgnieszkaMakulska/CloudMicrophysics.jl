@@ -49,9 +49,16 @@ struct P3_hom{FT} <: CMP.ParametersType{FT}
 end
 
 struct Frostenberg{FT} <: CMP.ParametersType{FT}
-    sigma::CMP.ParametersType{FT}
+    σ::CMP.ParametersType{FT}
     drawing_interval::FT
-    using_mean::Bool
+end
+
+struct Frostenberg_mean{FT} <: CMP.ParametersType{FT} 
+end
+
+struct Frostenberg_stochastic{FT} <: CMP.ParametersType{FT}
+    σ::CMP.ParametersType{FT}
+    γ::FT
 end
 
 struct CondParams{FT} <: CMP.ParametersType{FT}
